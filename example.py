@@ -1,8 +1,9 @@
+# -*- coding: utf-8 -*-
+#not for sales
+
 import speech_recognition as sr
 import os
 import AppOpener as ap
-
-# -*- coding: utf-8 -*-
 
 def open_program(program_name):
     ap.open(program_name, match_closest=True)
@@ -55,8 +56,9 @@ def execute_command(command):
                     
                 except Exception as e:
                     return f'Произошла ошибка при выполнении команды "{cmd}": {str(e)}, попробуйте задать запрос по-друггому'
-                
-    return 'Извините, я не понял вашу команду.'
+            #else:
+                   
+    raise ValueError('Неопознанная команда: ' + command)
  
 r = sr.Recognizer()
 mic = sr.Microphone()
