@@ -4,6 +4,7 @@
 import speech_recognition as sr
 import os
 import AppOpener as ap
+from test2 import giga_output, giga_clean
 
 def open_program(program_name):
     ap.open(program_name, match_closest=True)
@@ -56,9 +57,8 @@ def execute_command(command):
                     
                 except Exception as e:
                     return f'Произошла ошибка при выполнении команды "{cmd}": {str(e)}, попробуйте задать запрос по-друггому'
-            #else:
-                   
-    raise ValueError('Неопознанная команда: ' + command)
+    return print(giga_output(command))               
+    #raise ValueError('Неопознанная команда: ' + command)
  
 r = sr.Recognizer()
 mic = sr.Microphone()
@@ -66,6 +66,8 @@ mic = sr.Microphone()
 sr.LANGUAGE ='ru-RU'
 
 stop_words = ['stop', 'стоп', 'хватит', 'прекрати', 'кончай', 'спасибо', 'всё, спасибо', 'хватит, спасибо',  'остановись', 'а зелёный Оптимус Прайм огурец', 'иди нахуй', 'пошёл нахуй', 'пошёл в пизду']
+
+giga_clean()
 
 while True:
     with mic as source:

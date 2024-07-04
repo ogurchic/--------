@@ -1,33 +1,32 @@
 from langchain.schema import HumanMessage, SystemMessage
 from langchain.chat_models.gigachat import GigaChat
 
+import warnings
+from langchain_core._api.deprecation import LangChainDeprecationWarning
+warnings.filterwarnings("ignore", category=LangChainDeprecationWarning)
+
+
 with open(r"C:\Users\reyst\Desktop\практика\кое-что\config.txt", 'r') as f:
     giga_api = f.read().strip()
-
 
 # Авторизация в сервисе GigaChat
 chat = GigaChat(credentials=giga_api, verify_ssl_certs=False)
 
 messages = [
     SystemMessage(
-        content="Ты - крутой голосовой помощник по имени Борис."
+        content = "Ты - крутой голосовой помощник по имени Борис."
     )
 ]
 
-# while(True):
-#     # Ввод пользователя
-#     user_input = input("User: ")
-#     messages.append(HumanMessage(content=user_input))
-#     res = chat(messages)
-#     messages.append(res)
-#     # Ответ сервиса
-#     print("Bot: ", res.content)
-
-def output(input):
+def giga_output(input):
     messages.append(HumanMessage(content=input))
     res = chat(messages)
     messages.append(res)
     return res.content
+
+def giga_clean():
+    global messages
+    messages = messages[:1]
 
     
 
