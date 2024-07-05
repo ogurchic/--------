@@ -4,7 +4,8 @@
 import speech_recognition as sr
 import os
 import AppOpener as ap
-from test2 import giga_output, giga_clean
+from gpt import giga_output, giga_clean
+from weather import weather_output
 
 def open_program(program_name):
     ap.open(program_name, match_closest=True)
@@ -25,7 +26,8 @@ def execute_command(command):
         ('акрой музыку', 'акрой Я музыку', 'ыключи музыку', 'ыключи я музыку'):lambda:os.system
             ("\"C:\\Users\\reyst\\AppData\\Local\\Programs\\YandexMusic\\Яндекс Музыка.exe\""),
         ('Открой', 'открой', 'запусти', 'Запусти', 'Run', 'run', 'open', 'Open'):open_program,
-        ('Close', 'close', 'акрой', 'ыключи', 'акрыть', 'ыключить'):close_program
+        ('Close', 'close', 'акрой', 'ыключи', 'акрыть', 'ыключить'):close_program,
+        ('eather', 'огода', 'огоду', 'огоде'):print(weather_output())
     }
 
     for cmd_tuple, function in commands.items():
@@ -57,6 +59,7 @@ def execute_command(command):
                     
                 except Exception as e:
                     return f'Произошла ошибка при выполнении команды "{cmd}": {str(e)}, попробуйте задать запрос по-друггому'
+                
     return print(giga_output(command))               
     #raise ValueError('Неопознанная команда: ' + command)
  
