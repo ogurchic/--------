@@ -6,12 +6,17 @@ import os
 import AppOpener as ap
 from gpt import giga_output, giga_clean
 from weather import weather_output
+import webbrowser
 
 def open_program(program_name):
     ap.open(program_name, match_closest=True)
 
 def close_program(program_name):
     ap.close(program_name, match_closest=True)
+
+def web_search(search_phrase):
+    url = "https://yandex.ru/search/?text=" + search_phrase
+    webbrowser.open_new_tab(url)
 
 def execute_command(command):
     commands = {
@@ -27,7 +32,8 @@ def execute_command(command):
             ("\"C:\\Users\\reyst\\AppData\\Local\\Programs\\YandexMusic\\Яндекс Музыка.exe\""),
         ('Открой', 'открой', 'запусти', 'Запусти', 'Run', 'run', 'open', 'Open'):open_program,
         ('Close', 'close', 'акрой', 'ыключи', 'акрыть', 'ыключить'):close_program,
-        ('eather', 'огода', 'огоду', 'огоде'):print(weather_output())
+        ('айди в браузере', 'айди в интернете', 'поиск в интернете'):lambda:web_search(command),
+        ('eather', 'погода', 'огоду', 'огоде'):lambda:print(weather_output())
     }
 
     for cmd_tuple, function in commands.items():
@@ -52,7 +58,7 @@ def execute_command(command):
                         program_name  = command.split(cmd)[-1].strip()
                         close_program(program_name)
                         return f'Программа "{program_name}"открыта'
-
+                    
                     else:
                         result = function()
                         return f'Результат команды "{cmd}": {result}'
@@ -62,13 +68,13 @@ def execute_command(command):
                 
     return print(giga_output(command))               
     #raise ValueError('Неопознанная команда: ' + command)
- 
+
 r = sr.Recognizer()
 mic = sr.Microphone()
 
 sr.LANGUAGE ='ru-RU'
 
-stop_words = ['stop', 'стоп', 'хватит', 'прекрати', 'кончай', 'спасибо', 'всё, спасибо', 'хватит, спасибо',  'остановись', 'а зелёный Оптимус Прайм огурец', 'иди нахуй', 'пошёл нахуй', 'пошёл в пизду']
+stop_words = ['stop', 'стоп', 'хватит', 'прекрати', 'ончай', 'пасибо', 'сё, спасибо', 'ватит, спасибо',  'становись', 'рекращай', 'а зелёный Оптимус Прайм огурец', 'ди нахуй', 'пошёл нахуй', 'пошёл в пизду', 'иди в жопу']
 
 giga_clean()
 
