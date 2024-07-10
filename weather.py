@@ -1,6 +1,7 @@
-#ir iis pre-function for get weatger data
+# it is pre-function for get weatger data
 import requests
 
+# getting api key from file
 with open(r"C:\Users\reyst\Desktop\практика\кое-что\weather_api.txt", 'r') as f:
     api = f.read().strip()
 
@@ -17,8 +18,11 @@ def get_location_by_ip():
     return location_data
 
 def weather_data():
+    # getting coordinats from get_location_by_ip()
     lat = get_location_by_ip()['lat']
     lon = get_location_by_ip()['lon']
+
+    # parsing web page of openweathermap
     api_url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api}&units=metric&lang=ru"
     response  = requests.get(api_url)
     return response.json()

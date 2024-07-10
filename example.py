@@ -16,7 +16,12 @@ def close_program(program_name):
 
 def web_search(search_phrase):
     url = "https://yandex.ru/search/?text=" + search_phrase
-    webbrowser.open_new_tab(url)
+    return webbrowser.open_new_tab(url)
+
+def youtube_search(search_phrase):
+    url = "https://www.youtube.com/results?search_query=" + search_phrase
+    return webbrowser.open_new_tab(url)
+
 
 def execute_command(command):
     commands = {
@@ -32,15 +37,16 @@ def execute_command(command):
             ("\"C:\\Users\\reyst\\AppData\\Local\\Programs\\YandexMusic\\Яндекс Музыка.exe\""),
         ('Открой', 'открой', 'запусти', 'Запусти', 'Run', 'run', 'open', 'Open'):open_program,
         ('Close', 'close', 'акрой', 'ыключи', 'акрыть', 'ыключить'):close_program,
-        ('айди в браузере', 'айди в интернете', 'поиск в интернете'):lambda:web_search(command),
-        ('eather', 'погода', 'огоду', 'огоде'):lambda:print(weather_output())
+        ('айди в браузере', 'айди в интернете', 'поиск в интернете'):web_search,
+        ('eather', 'погода', 'огоду', 'огоде'):lambda:print(weather_output()),
+        ('ткрой в YouTube', 'айди в YouTube', 'айди на YouTube'):youtube_search
     }
 
-    for cmd_tuple, function in commands.items():
+    for cmd_tuple, function in commands.items(): # проходимся по словарю с командами
         for cmd in cmd_tuple:
             if cmd in command:
                 
-                try:
+                try: # обработчик исключений
 
                     if cmd in ['создать папку', 'сделай папку', 'Создай папку', 'Создать папку', 'Сделай папку', 'создай папку', 
                             'удали папку', 'удалить папку', 'сотри папку','Удали папку', 'Удалить папку', 'Сотри папку']:
@@ -59,6 +65,16 @@ def execute_command(command):
                         close_program(program_name)
                         return f'Программа "{program_name}"открыта'
                     
+                    if cmd in ['айди в браузере', 'айди в интернете', 'поиск в интернете']:
+                        prompt = command.split(cmd)[-1].strip()
+                        web_search(prompt)
+                        return f'Поиск по запросу "{prompt}" выполнен'
+
+                    if cmd in ['ткрой в YouTube', 'айди в YouTube', 'айди на YouTube']:
+                        prompt = command.split(cmd)[-1].strip()
+                        youtube_search(prompt)
+                        return f'Поиск в YouTube по запросу "{prompt}" выполнен'
+
                     else:
                         result = function()
                         return f'Результат команды "{cmd}": {result}'
@@ -74,7 +90,7 @@ mic = sr.Microphone()
 
 sr.LANGUAGE ='ru-RU'
 
-stop_words = ['stop', 'стоп', 'хватит', 'прекрати', 'ончай', 'пасибо', 'сё, спасибо', 'ватит, спасибо',  'становись', 'рекращай', 'а зелёный Оптимус Прайм огурец', 'ди нахуй', 'пошёл нахуй', 'пошёл в пизду', 'иди в жопу']
+stop_words = ['stop', 'стоп', 'хватит', 'прекрати', 'ончай', 'спасибо', 'Всё, спасибо', 'ватит, спасибо',  'остановись', 'прекращай', 'а зелёный Оптимус Прайм огурец', 'иди нахуй', 'пошёл нахуй', 'пошёл в пизду', 'иди в жопу']
 
 giga_clean()
 

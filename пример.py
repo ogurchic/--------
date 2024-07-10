@@ -1,160 +1,106 @@
-# import argparse
-# import itertools
-# import time
+import turtle
+import random
 
-# import grpc
+# Константы
+WIDTH = 600
+HEIGHT = 600
+SPEED = 10
+FPS = 10
 
-# import recognition_pb2
-# import recognition_pb2_grpc
+# Класс для создания змейки
+class Snake:
+    def __init__(self, length=5):
+        self.segments = []
+        for _ in range(length):
+            self.segments.append(turtle.Turtle())
+        self.length = length
+        self.head = self.segments[0]
+        self.food = turtle.Turtle()
+        self.score = 0
+        self.is_game_over = False
 
+    # Метод для рисования сегментов змейки
+    def draw(self):
+        for segment in self.segments:
+            segment.forward(SPEED)
 
-# CHUNK_SIZE = 2048
-# SLEEP_TIME = 0.1
+    # Метод для перемещения змейки
+    def move(self, direction):
+        if not self.is_game_over:
+            x = self.head.x()
+            y = self.head.y()
+            if direction == 'up':
+                self.head.setheading(90)
+                self.draw()
+            elif direction == 'down':
+                self.head.setheading(270)
+                self.draw()
+            elif direction == 'left':
+                self.head.setheading(180)
+                self.draw()
+            elif direction == 'right':
+                self.head.setheading(0)
+                self.draw()
 
-# ENCODING_PCM = 'pcm'
+            # Проверка на столкновение со стеной
+            if x > WIDTH or x < 0 or y > HEIGHT or y < 0:
+                self.is_game_over = True
 
-# ENCODINGS_MAP = {
-#     ENCODING_PCM: recognition_pb2.RecognitionOptions.PCM_S16LE,
-#     'opus': recognition_pb2.RecognitionOptions.OPUS,
-#     'mp3': recognition_pb2.RecognitionOptions.MP3,
-#     'flac': recognition_pb2.RecognitionOptions.FLAC,
-#     'alaw': recognition_pb2.RecognitionOptions.ALAW,
-#     'mulaw': recognition_pb2.RecognitionOptions.MULAW,
-# }
+            # Проверка на столкновение с самим собой
+            for segment in self.segments[1:]:
+                if self.head.distance(segment) < 15:
+                    self.is_game_over = True
 
+    # Метод для обновления положения пищи
+    def update_food(self):
+        x = random.randint(0, WIDTH)
+        y = random.randint(0, HEIGHT)
+        self.food.goto(x, y)
 
-# def try_printing_request_id(md):
-#     for m in md:
-#         if m.key == 'x-request-id':
-#             print('RequestID:', m.value)
+# Функция для обработки событий клавиатуры
+def key_handler(event):
+    if event.keysym == 'Up' and snake.is_game_over is False:
+        snake.move('up')
+    elif event.keysym == 'Down' and snake.is_game_over is False:
+        snake.move('down')
+    elif event.keysym == 'Left' and snake.is_game_over is False:
+        snake.move('left')
+    elif event.keysym == 'Right' and snake.is_game_over is False:
+        snake.move('right')
 
+# Создание змейки
+snake = Snake()
 
-# def generate_audio_chunks(path, chunk_size=CHUNK_SIZE, sleep_time=SLEEP_TIME):
-#     with open(path, 'rb') as f:
-#         for data in iter(lambda: f.read(chunk_size), b''):
-#             yield recognition_pb2.RecognitionRequest(audio_chunk=data)
-#             time.sleep(sleep_time)
+# Установка параметров окна
+wn = turtle.Screen()
+wn.setup(WIDTH, HEIGHT)
+wn.title("Snake Game")
+wn.bgcolor('black')
+wn.tracer(FPS)
 
+# Отображение пищи
+snake.update_food()
 
-# def recognize(args):
-#     ssl_cred = grpc.ssl_channel_credentials(
-#         root_certificates=open(args.ca, 'rb').read() if args.ca else None,
-#     )
-#     token_cred = grpc.access_token_call_credentials(args.token)
+# Обработка событий клавиатуры
+wn.listen()
+wn.onkeypress(key_handler)
 
-#     channel = grpc.secure_channel(
-#         args.host,
-#         grpc.composite_channel_credentials(ssl_cred, token_cred)
-#     )
+# Основной цикл игры
+while True:
+    wn.update()
+    if snake.head.distance(snake.food) < 15:
+        snake.length += 1
+        snake.score += 1
+        snake.update_food()
+    else:
+        if len(snake.segments) > 0:  # Добавлена проверка на наличие элементов в списке
+            snake.segments.pop()
 
-#     stub = recognition_pb2_grpc.SmartSpeechStub(channel)
+    # Проверка на конец игры
+    if snake.is_game_over:
+        wn.clear()
+        wn.update()
+        print(f"Game Over! Your score is {snake.score}")
+        break
 
-#     metadata_pairs = [(args.metadata[i], args.metadata[i+1]) for i in range(0, len(args.metadata), 2)]
-
-#     con = stub.Recognize(itertools.chain(
-#         (recognition_pb2.RecognitionRequest(options=args.recognition_options),),
-#         generate_audio_chunks(args.file),
-#     ), metadata=metadata_pairs)
-
-#     try:
-#         for resp in con:
-#             if not resp.eou:
-#                 print('Got partial result:')
-#             else:
-#                 print('Got end-of-utterance result:')
-
-#             for i, hyp in enumerate(resp.results):
-#                 print('  Hyp #{}: {}'.format(i + 1, hyp.normalized_text if args.normalized_result else hyp.text))
-
-#             if resp.eou and args.emotions_result:
-#                 print('  Emotions: pos={}, neu={}, neg={}'.format(
-#                     resp.emotions_result.positive,
-#                     resp.emotions_result.neutral,
-#                     resp.emotions_result.negative,
-#                 ))
-#     except grpc.RpcError as err:
-#         print('RPC error: code = {}, details = {}'.format(err.code(), err.details()))
-#     except Exception as exc:
-#         print('Exception:', exc)
-#     else:
-#         print('Recognition has finished')
-#     finally:
-#         try_printing_request_id(con.initial_metadata())
-#         channel.close()
-
-
-# class Arguments:
-#     NOT_RECOGNITION_OPTIONS = {'host', 'token', 'file', 'normalized_result', 'emotions_result', 'metadata', 'ca'}
-#     DURATIONS = {'no_speech_timeout', 'max_speech_timeout', 'eou_timeout'}
-#     REPEATED = {'words', 'insight_models'}
-#     HINTS_PREFIX = 'hints_'
-#     SPEAKER_SEPARATION_PREFIX = 'speaker_separation_options_'
-
-#     def __init__(self):
-#         super().__setattr__('recognition_options', recognition_pb2.RecognitionOptions())
-
-#     def __setattr__(self, key, value):
-#         if key in self.NOT_RECOGNITION_OPTIONS:
-#             super().__setattr__(key, value)
-#         elif key.startswith(self.HINTS_PREFIX):
-#             key = key[len(self.HINTS_PREFIX):]
-#             self._set_option(self.recognition_options.hints, key, value)
-#         elif key.startswith(self.SPEAKER_SEPARATION_PREFIX):
-#             key = key[len(self.SPEAKER_SEPARATION_PREFIX):]
-#             self._set_option(self.recognition_options.speaker_separation_options, key, value)
-#         else:
-#             self._set_option(self.recognition_options, key, value)
-
-#     def _set_option(self, obj, key, value):
-#         if key in self.DURATIONS:
-#             getattr(obj, key).FromJsonString(value)
-#         elif key in self.REPEATED:
-#             if value:
-#                 getattr(obj, key).extend(value)
-#         else:
-#             setattr(obj, key, value)
-
-
-# def create_parser():
-#     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-
-#     parser.add_argument('--host', default='smartspeech.sber.ru', help='host:port of gRPC endpoint')
-#     parser.add_argument('--token', required=True, default=argparse.SUPPRESS, help='access token')
-#     parser.add_argument('--file', required=True, default=argparse.SUPPRESS, help='audio file for recognition')
-#     parser.add_argument('--metadata', nargs='*', default=[], help=' ')
-
-#     parser.add_argument('--ca', help='CA certificate file name (TLS)')
-
-#     parser.add_argument('--normalized-result', action='store_true', help='show normalized text')
-#     parser.add_argument('--emotions-result', action='store_true', help='show emotions result')
-
-#     parser.add_argument('--audio-encoding', default=ENCODINGS_MAP[ENCODING_PCM], type=lambda x: ENCODINGS_MAP[x], help=str(list(ENCODINGS_MAP)))
-#     parser.add_argument('--sample-rate', default=16000, type=int, help='PCM only')
-#     parser.add_argument('--model', default='', help=' ')
-#     parser.add_argument('--hypotheses-count', default=1, type=int, help=' ')
-#     parser.add_argument('--enable-profanity-filter', action='store_true', help=' ')
-#     parser.add_argument('--enable-multi-utterance', action='store_true', help=' ')
-#     parser.add_argument('--enable-partial-results', action='store_true', help=' ')
-#     parser.add_argument('--no-speech-timeout', default='7s', help=' ')
-#     parser.add_argument('--max-speech-timeout', default='20s', help=' ')
-#     parser.add_argument('--hints-words', nargs='*', default=[], help=' ')
-#     parser.add_argument('--hints-enable-letters', action='store_true', help=' ')
-#     parser.add_argument('--hints-eou-timeout', default='0s', help=' ')
-#     parser.add_argument('--channels-count', default=1, type=int, help=' ')
-#     parser.add_argument('--speaker-separation-options-enable', action='store_true', help=' ')
-#     parser.add_argument('--speaker-separation-options-enable-only-main-speaker', action='store_true', help=' ')
-#     parser.add_argument('--speaker-separation-options-count', default=0, type=int, help=' ')
-#     parser.add_argument('--force_cyrillic', action='store_true', help=' ')
-#     parser.add_argument('--insight-models', nargs='*', default=[], help=' ')
-
-#     return parser
-
-
-# def main():
-#     parser = create_parser()
-
-#     recognize(parser.parse_args(namespace=Arguments()))
-
-
-# if __name__ == '__main__':
-#     main()
+wn.mainloop()
