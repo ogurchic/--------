@@ -5,3 +5,5 @@ __pycache__/
 идеи для бота.txt
 test.py
 кое-что/sber voice
+кое-что/sber voice/
+api_keys.env
