@@ -30,5 +30,5 @@ def weather_data():
 def weather_output():
     weather_data()
     weather = f'В населённом пункте {weather_data()['name']} сейчас {weather_data()['weather'][0]['description']}, {int(weather_data()['main']['temp'])} °C, ощущается как {int(weather_data()['main']['feels_like'])} °C.'
-    # print(weather)
+    print(weather)
     return weather

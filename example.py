@@ -8,6 +8,13 @@ import AppOpener as ap
 from gpt import giga_output, giga_clean
 from weather import weather_output
 import webbrowser
+import pyttsx3
+
+# Функция для озвучивания текста
+def speak(text):
+    engine = pyttsx3.init()
+    engine.say(text)
+    engine.runAndWait()
 
 def open_program(program_name):
     ap.open(program_name, match_closest=True)
@@ -39,7 +46,7 @@ def execute_command(command):
         ('Открой', 'открой', 'запусти', 'Запусти', 'Run', 'run', 'open', 'Open'):open_program,
         ('Close', 'close', 'акрой', 'ыключи', 'акрыть', 'ыключить'):close_program,
         ('айди в браузере', 'айди в интернете', 'поиск в интернете'):web_search,
-        ('eather', 'погода', 'огоду', 'огоде'):lambda:print(weather_output()),
+        ('eather', 'погода', 'огоду', 'огоде'):lambda:weather_output(),
         ('ткрой в YouTube', 'айди в YouTube', 'айди на YouTube'):youtube_search
     }
 
@@ -82,8 +89,8 @@ def execute_command(command):
                     
                 except Exception as e:
                     return f'Произошла ошибка при выполнении команды "{cmd}": {str(e)}, попробуйте задать запрос по-друггому'
-                
-    return print(giga_output(command))        
+    output = giga_output(command)      
+    return output       
 
 def recognition():
     r = sr.Recognizer()
@@ -114,5 +121,6 @@ def recognition():
                 break
             else:
                 response = execute_command(text)
+                speak(response)  # Озвучиваем ответ
                 print(response)
                 return response
