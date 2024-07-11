@@ -1,3 +1,4 @@
+#example.py
 # -*- coding: utf-8 -*-
 #not for sales
 
@@ -82,34 +83,36 @@ def execute_command(command):
                 except Exception as e:
                     return f'Произошла ошибка при выполнении команды "{cmd}": {str(e)}, попробуйте задать запрос по-друггому'
                 
-    return print(giga_output(command))               
-    #raise ValueError('Неопознанная команда: ' + command)
+    return print(giga_output(command))        
 
-r = sr.Recognizer()
-mic = sr.Microphone()
+def recognition():
+    r = sr.Recognizer()
+    mic = sr.Microphone()
 
-sr.LANGUAGE ='ru-RU'
+    sr.LANGUAGE ='ru-RU'
 
-stop_words = ['stop', 'стоп', 'хватит', 'прекрати', 'ончай', 'спасибо', 'Всё, спасибо', 'ватит, спасибо',  'остановись', 'прекращай', 'а зелёный Оптимус Прайм огурец', 'иди нахуй', 'пошёл нахуй', 'пошёл в пизду', 'иди в жопу']
+    stop_words = ['stop', 'стоп', 'хватит', 'прекрати', 'ончай', 'спасибо', 'Всё, спасибо', 'ватит, спасибо',  'остановись', 'прекращай', 'а зелёный Оптимус Прайм огурец', 'иди нахуй', 'пошёл нахуй', 'пошёл в пизду', 'иди в жопу']
 
-giga_clean()
+    giga_clean()
 
-while True:
-    with mic as source:
-        r.adjust_for_ambient_noise(source)
-        print("Скажите что-нибудь...")
-        audio = r.listen(source)
+    while True:
+        with mic as source:
+            r.adjust_for_ambient_noise(source)
+            print("Скажите что-нибудь...")
+            audio = r.listen(source)
 
-    try:
-        text = r.recognize_google(audio, language='ru-RU')
-    except sr.UnknownValueError:
-        break
-    except sr.RequestError as e:
-        print("Не удалось запросить результаты у службы Google Speech Recognition; {0}".format(e))
-        break
-    else:
-        print(text)
-        if text.lower() in stop_words:
+        try:
+            text = r.recognize_google(audio, language='ru-RU')
+        except sr.UnknownValueError:
+            break
+        except sr.RequestError as e:
+            print("Не удалось запросить результаты у службы Google Speech Recognition; {0}".format(e))
             break
         else:
-            response = execute_command(text)
+            print(text)
+            if text.lower() in stop_words:
+                break
+            else:
+                response = execute_command(text)
+                print(response)
+                return response
