@@ -9,6 +9,7 @@ from gpt import giga_output, giga_clean
 from weather import weather_output
 import webbrowser
 import pyttsx3
+import text_to_voice as v
 
 # Функция для озвучивания текста
 def speak(text):
@@ -121,6 +122,7 @@ def recognition():
                 break
             else:
                 response = execute_command(text)
-                speak(response)  # Озвучиваем ответ
+                #speak(response)  # Озвучиваем ответ
+                v.text_to_speech(response)
                 print(response)
                 return response

@@ -1,13 +1,14 @@
 from langchain.schema import HumanMessage, SystemMessage
 from langchain.chat_models.gigachat import GigaChat
+import os
+from dotenv import load_dotenv
 
 import warnings
 from langchain_core._api.deprecation import LangChainDeprecationWarning
 warnings.filterwarnings("ignore", category=LangChainDeprecationWarning)
 
-
-with open(r"C:\Users\reyst\Desktop\практика\кое-что\config.txt", 'r') as f:
-    giga_api = f.read().strip()
+load_dotenv()
+giga_api = os.getenv("GIGA_API")
 
 # Авторизация в сервисе GigaChat
 chat = GigaChat(credentials=giga_api, verify_ssl_certs=False)
@@ -28,7 +29,6 @@ def giga_clean():
     global messages
     messages = messages[:1]
 
-    
 
 
 

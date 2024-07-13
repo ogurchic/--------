@@ -1,9 +1,12 @@
 # it is pre-function for get weatger data
 import requests
+from dotenv import load_dotenv
+import os
 
-# getting api key from file
-with open(r"C:\Users\reyst\Desktop\практика\кое-что\weather_api.txt", 'r') as f:
-    api = f.read().strip()
+
+# getting api key 
+load_dotenv()
+api = os.getenv('WEATHER_API')
 
 def get_location_by_ip():
     # getting ip address

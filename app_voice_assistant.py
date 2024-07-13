@@ -4,6 +4,7 @@ from PyQt6.QtCore import QSize, Qt
 import sys # Только для доступа к аргументам командной строки
 import example as ex
 
+
 # Приложению нужен один (и только один) экземпляр QApplication.
 # Передаём sys.argv, чтобы разрешить аргументы командной строки для приложения.
 # Если не будете использовать аргументы командной строки, QApplication([]) тоже работает
@@ -40,7 +41,9 @@ class MainWindow(QtWidgets.QMainWindow):
         text = self.text_input.text()
         print(text)
         #Здесь должна быть функция для ввода текста
-        ex.execute_command(text)
+        output = ex.execute_command(text)
+        print(output)
+
 
 app = QtWidgets.QApplication([])
 window = MainWindow()
