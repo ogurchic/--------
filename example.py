@@ -10,6 +10,7 @@ from weather import weather_output
 import webbrowser
 import pyttsx3
 import text_to_voice as v
+import news
 
 # Функция для озвучивания текста
 def speak(text):
@@ -48,7 +49,9 @@ def execute_command(command):
         ('Close', 'close', 'акрой', 'ыключи', 'акрыть', 'ыключить'):close_program,
         ('айди в браузере', 'айди в интернете', 'поиск в интернете'):web_search,
         ('eather', 'погода', 'огоду', 'огоде'):lambda:weather_output(),
-        ('ткрой в YouTube', 'айди в YouTube', 'айди на YouTube'):youtube_search
+        ('ткрой в YouTube', 'айди в YouTube', 'айди на YouTube'):youtube_search,
+        ('новости', 'Новости'):lambda:news.read_news(),
+        ('открой новости', 'Открой новости'):news.open_news
     }
 
     for cmd_tuple, function in commands.items(): # проходимся по словарю с командами
@@ -83,6 +86,10 @@ def execute_command(command):
                         prompt = command.split(cmd)[-1].strip()
                         youtube_search(prompt)
                         return f'Поиск в YouTube по запросу "{prompt}" выполнен'
+                    
+                    if cmd in ['открой новости', 'Открой новости', 'ткрой, пожалуйста, новсти']:
+                        news.open_news()
+                        return 'Новости открыты'
 
                     else:
                         result = function()
