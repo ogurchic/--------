@@ -11,6 +11,7 @@ import webbrowser
 import pyttsx3
 import text_to_voice as v
 import news
+import notes
 
 # Функция для озвучивания текста
 def speak(text):
@@ -51,7 +52,11 @@ def execute_command(command):
         ('eather', 'погода', 'огоду', 'огоде'):lambda:weather_output(),
         ('ткрой в YouTube', 'айди в YouTube', 'айди на YouTube'):youtube_search,
         ('новости', 'Новости'):lambda:news.read_news(),
-        ('открой новости', 'Открой новости'):news.open_news
+        ('открой новости', 'Открой новости'):news.open_news,
+        ('Прочитай заметки', 'Прочитать заметки', 'прочитай заметки', 'прочитать заметки', "покажи заметки"):lambda:notes.read_notes(),
+        ('Добавить заметку', 'Добавь заметку'):notes.add_note,
+        ('Удалить заметку', 'Удали заметку'):notes
+        
     }
 
     for cmd_tuple, function in commands.items(): # проходимся по словарю с командами
@@ -90,6 +95,16 @@ def execute_command(command):
                     if cmd in ['открой новости', 'Открой новости', 'ткрой, пожалуйста, новсти']:
                         news.open_news()
                         return 'Новости открыты'
+                    
+                    if cmd in ['Добавить заметку', 'Добавь заметку']:
+                        text = command.split(cmd)[-1].strip()
+                        notes.add_note(text)
+                        return 'Заметка добавленна'
+                        
+                    if cmd in ['Удалить заметку', 'Удали заметку']:
+                        number = int(command.split(cmd)[-1].strip())
+                        notes.delete_note(number)
+                        return 'Заметка удалена'
 
                     else:
                         result = function()
