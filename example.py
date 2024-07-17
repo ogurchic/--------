@@ -12,6 +12,49 @@ import pyttsx3
 import text_to_voice as v
 import news
 import notes
+import datetime
+import win32api
+import time
+from ctypes import cast, POINTER
+from comtypes import CLSCTX_ALL
+from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
+
+def set_volume(volume):
+    if volume < 1 or volume > 100:
+        print("выберете значение между 1 и 100")
+        return
+
+    # Получаем все активные аудиоустройства
+    devices = AudioUtilities.GetSpeakers()
+    interface = devices.Activate(
+        IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
+    volume_control = cast(interface, POINTER(IAudioEndpointVolume))
+
+    # Устанавливаем громкость
+    volume_control.SetMasterVolumeLevelScalar(volume / 100, None)
+
+def play_pause():
+    VK_MEDIA_PLAY_PAUSE = 0xB3
+    hwcode = win32api.MapVirtualKey(VK_MEDIA_PLAY_PAUSE, 0)
+    win32api.keybd_event(VK_MEDIA_PLAY_PAUSE, hwcode)
+
+def next_media():
+    VK_MEDIA_NEXT_TRACK = 0xB0
+    hwcode = win32api.MapVirtualKey(VK_MEDIA_NEXT_TRACK, 0)
+    win32api.keybd_event(VK_MEDIA_NEXT_TRACK, hwcode)
+
+def prev_media():
+    VK_MEDIA_PREV_TRACK = 0xB1
+    hwcode = win32api.MapVirtualKey(VK_MEDIA_PREV_TRACK, 0)
+    win32api.keybd_event(VK_MEDIA_PREV_TRACK, hwcode)
+    time.sleep(1)
+    win32api.keybd_event(VK_MEDIA_PREV_TRACK, hwcode)
+
+def whats_time():
+    # Получаем текущее время
+    current_time = datetime.datetime.now()
+    # Выводим текущее время
+    return f"Текущее время: {current_time.strftime("%H:%M:%S")}"
 
 # Функция для озвучивания текста
 def speak(text):
@@ -36,28 +79,30 @@ def youtube_search(search_phrase):
 
 def execute_command(command):
     commands = {
-        ('создать папку', 'сделай папку', 'Создай папку', 'Создать папку', 'Сделай папку', 'создай папку'):os.mkdir,
-        ('удали папку', 'удалить папку', 'сотри папку','Удали папку', 'Удалить папку', 'Сотри папку'):os.rmdir,
-        ('ткрой яднекс', 'апусти Яндекс', 'ткрой Яндекс', 'апусти яндекс '):lambda:os.system
-            ("\"C:\\Users\\reyst\\AppData\\Local\\Yandex\\YandexBrowser\\Application\\browser.exe\""),
-        ('ткрой музыку', 'ткрой Яндекс музыку', 'апусти музыку', 'апусти Яндекс музыку', 'ключи музыку'):lambda:os.system
+        ('создать папку', 'сделай папку', 'создай папку'):os.mkdir,
+        ('удали папку', 'удалить папку', 'сотри папку'):os.rmdir,
+        ('открой музыку', 'запусти музыку', 'включи музыку', 'открой я музык'):lambda:os.system
             ("\"C:\\Users\\reyst\\AppData\\Local\\Programs\\YandexMusic\\Яндекс Музыка.exe\""),
-        ('акрой яднекс', 'ыключи Яндекс', 'акрой Яндекс', 'ыключи яндекс '):lambda:os.system
-            ("\"C:\\Users\\reyst\\AppData\\Local\\Yandex\\YandexBrowser\\Application\\browser.exe\""),
-        ('акрой музыку', 'акрой Я музыку', 'ыключи музыку', 'ыключи я музыку'):lambda:os.system
+        ('закрой музыку', 'закрой я музык', 'выключи музыку', 'выключи я музыку'):lambda:os.system
             ("\"C:\\Users\\reyst\\AppData\\Local\\Programs\\YandexMusic\\Яндекс Музыка.exe\""),
-        ('Открой', 'открой', 'запусти', 'Запусти', 'Run', 'run', 'open', 'Open'):open_program,
-        ('Close', 'close', 'акрой', 'ыключи', 'акрыть', 'ыключить'):close_program,
-        ('айди в браузере', 'айди в интернете', 'поиск в интернете'):web_search,
-        ('eather', 'погода', 'огоду', 'огоде'):lambda:weather_output(),
-        ('ткрой в YouTube', 'айди в YouTube', 'айди на YouTube'):youtube_search,
-        ('новости', 'Новости'):lambda:news.read_news(),
-        ('открой новости', 'Открой новости'):news.open_news,
-        ('Прочитай заметки', 'Прочитать заметки', 'прочитай заметки', 'прочитать заметки', "покажи заметки"):lambda:notes.read_notes(),
-        ('Добавить заметку', 'Добавь заметку'):notes.add_note,
-        ('Удалить заметку', 'Удали заметку'):notes
-        
+        ('открой программу', 'запусти', 'run', 'open'):open_program,
+        ('close', 'закрой', 'выключи', 'закрыть', 'выключить'):close_program,
+        ('найди в браузере', 'найди в интернете', 'поиск в интернете'):web_search,
+        ('weather', 'погода', 'погоду', 'погоде'):lambda:weather_output(),
+        ('открой в youtube', 'найди в youtube', 'найди на youtube'):youtube_search,
+        ('прочитай новости', 'что по новостям'):lambda:news.read_news(),
+        ('открой новости', 'покажи новости'):news.open_news,
+        ('прочитай заметки', 'прочитать заметки', "покажи заметки", "открой заметки"):lambda:notes.read_notes(),
+        ('добавить заметку', 'напиши новую заметку', "добавь замектку", "добавь новую заметку"):notes.add_note,
+        ('удалить заметку', 'удали заметку', "сотри заметку", "стереть заметку"):notes,
+        ('который час', 'сколько время', 'подскажи время'):lambda:whats_time(),
+        ('play', 'pause', 'плей', 'пауза', "поставь на паузу", "продолжай играть"):lambda:play_pause(),
+        ('next', 'следующий трек', 'переключи музыку', 'давай дальше'):lambda:next_media(),
+        ('prev', 'предыдущий трек'):lambda:prev_media(),
+        ('установи громкость на ', 'поставь громкость', 'громкость на ', 'установи уровень громкости на '):set_volume
     }
+
+    command = command.lower()
 
     for cmd_tuple, function in commands.items(): # проходимся по словарю с командами
         for cmd in cmd_tuple:
@@ -65,46 +110,51 @@ def execute_command(command):
                 
                 try: # обработчик исключений
 
-                    if cmd in ['создать папку', 'сделай папку', 'Создай папку', 'Создать папку', 'Сделай папку', 'создай папку', 
-                            'удали папку', 'удалить папку', 'сотри папку','Удали папку', 'Удалить папку', 'Сотри папку']:
+                    if cmd in ['создать папку', 'сделай папку', 'создай папку', 
+                            'удали папку', 'удалить папку', 'сотри папку']:
                         # предполагается, что имя папки следует после команды
                         folder_name = command.split(cmd)[-1].strip()
                         function(folder_name)
                         return f'Команда "{cmd}" "{folder_name}"выполнена'
                     
-                    if cmd in ["Открой", "открой", "запусти", "Запусти", "Run", "run"]:
+                    if cmd in ['открой', 'запусти', 'run', 'open']:
                         program_name = command.split(cmd)[-1].strip()
                         open_program(program_name)
-                        return f'Программа "{program_name}"открыта'
+                        return f'Программа "{program_name}" открыта'
 
-                    if cmd in  ['Close', 'close', 'акрой', 'ыключи', 'акрыть', 'ыключить']:
+                    if cmd in  ['close', 'закрой', 'выключи', 'закрыть', 'выключить']:
                         program_name  = command.split(cmd)[-1].strip()
                         close_program(program_name)
-                        return f'Программа "{program_name}"открыта'
+                        return f'Программа "{program_name}" закрыта'
                     
-                    if cmd in ['айди в браузере', 'айди в интернете', 'поиск в интернете']:
+                    if cmd in ['найди в браузере', 'найди в интернете', 'поиск в интернете']:
                         prompt = command.split(cmd)[-1].strip()
                         web_search(prompt)
                         return f'Поиск по запросу "{prompt}" выполнен'
 
-                    if cmd in ['ткрой в YouTube', 'айди в YouTube', 'айди на YouTube']:
+                    if cmd in ['открой в youtube', 'найди в youtube', 'найди на youtube']:
                         prompt = command.split(cmd)[-1].strip()
                         youtube_search(prompt)
                         return f'Поиск в YouTube по запросу "{prompt}" выполнен'
                     
-                    if cmd in ['открой новости', 'Открой новости', 'ткрой, пожалуйста, новсти']:
+                    if cmd in ['открой новости', 'покажи новости']:
                         news.open_news()
                         return 'Новости открыты'
                     
-                    if cmd in ['Добавить заметку', 'Добавь заметку']:
+                    if cmd in ['добавить заметку', 'напиши новую заметку', "добавть замектку"]:
                         text = command.split(cmd)[-1].strip()
                         notes.add_note(text)
                         return 'Заметка добавленна'
                         
-                    if cmd in ['Удалить заметку', 'Удали заметку']:
+                    if cmd in ['удалить заметку', 'удали заметку', "сотри заметку", "стереть заметку"]:
                         number = int(command.split(cmd)[-1].strip())
                         notes.delete_note(number)
                         return 'Заметка удалена'
+                    
+                    if cmd in ['установи громкость на ', 'поставь громкость', 'громкость ', 'громкость на ']:
+                        volume_level = int(command.split(cmd)[-1].strip())
+                        set_volume(volume_level)
+                        return f'Уровень громкости - {volume_level}'
 
                     else:
                         result = function()
@@ -121,7 +171,8 @@ def recognition():
 
     sr.LANGUAGE ='ru-RU'
 
-    stop_words = ['stop', 'стоп', 'хватит', 'прекрати', 'ончай', 'спасибо', 'Всё, спасибо', 'ватит, спасибо',  'остановись', 'прекращай', 'а зелёный Оптимус Прайм огурец', 'иди нахуй', 'пошёл нахуй', 'пошёл в пизду', 'иди в жопу']
+    stop_words = ['stop', 'стоп', 'хватит', 'прекрати', 'ончай', 'спасибо', 'Всё, спасибо', 'ватит, спасибо',  
+                  'остановись', 'прекращай', 'а зелёный Оптимус Прайм огурец', 'пошёл в ', 'иди в']
 
     giga_clean()
 
