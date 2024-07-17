@@ -18,6 +18,18 @@ import time
 from ctypes import cast, POINTER
 from comtypes import CLSCTX_ALL
 from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
+import locale
+
+def whats_date():
+    # Устанавливаем локаль на русский язык
+    locale.setlocale(locale.LC_TIME, "ru_RU")
+    # Получаем текущую дату
+    now = datetime.datetime.now()
+    # Выводим дату и день недели
+    date = now.strftime(r"%d.%m.%Y")
+    day_of_week = now.strftime(r"%A")
+
+    return f'Сегодня {day_of_week}, {date}'
 
 def set_volume(volume):
     if volume < 1 or volume > 100:
@@ -99,7 +111,8 @@ def execute_command(command):
         ('play', 'pause', 'плей', 'пауза', "поставь на паузу", "продолжай играть"):lambda:play_pause(),
         ('next', 'следующий трек', 'переключи музыку', 'давай дальше'):lambda:next_media(),
         ('prev', 'предыдущий трек'):lambda:prev_media(),
-        ('установи громкость на ', 'поставь громкость', 'громкость на ', 'установи уровень громкости на '):set_volume
+        ('установи громкость на ', 'поставь громкость', 'громкость на ', 'установи уровень громкости на '):set_volume,
+        ('какой сегодня день', 'какое число', 'что сегодня', 'какой день недели', 'какой сегодня день недели'):lambda:whats_date()
     }
 
     command = command.lower()
