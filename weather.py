@@ -33,7 +33,7 @@ def weather_data(location_data):
 def weather_output():
     location_data = get_location_by_ip()
     weather_info = weather_data(location_data)
-    weather = f'В населённом пункте {weather_info['name']} сейчас {weather_info['weather'][0]['description']}, {int(weather_info['main']['temp'])} °C, ощущается как {int(weather_info['main']['feels_like'])} °C.'
+    weather = f'В населённом пункте {weather_info['name']} сейчас {weather_info['weather'][0]['description']}, {int(weather_info['main']['temp'])} °C, ощущается как {int(weather_info['main']['feels_like'])} °C'
     print(weather)
     return weather
 

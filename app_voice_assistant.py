@@ -1,7 +1,7 @@
 #app_voice_assistant.py
-from PyQt6 import QtWidgets, QtGui
-from PyQt6.QtCore import QSize, Qt
-import sys # Только для доступа к аргументам командной строки
+from PyQt6 import QtWidgets
+from PyQt6.QtCore import QSize
+#import sys # Только для доступа к аргументам командной строки
 import example as ex
 
 
