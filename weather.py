@@ -20,10 +20,10 @@ def get_location_by_ip():
 
     return location_data
 
-def weather_data():
+def weather_data(location_data):
     # getting coordinats from get_location_by_ip()
-    lat = get_location_by_ip()['lat']
-    lon = get_location_by_ip()['lon']
+    lat = location_data['lat']
+    lon = location_data['lon']
 
     # parsing web page of openweathermap
     api_url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api}&units=metric&lang=ru"
@@ -31,7 +31,9 @@ def weather_data():
     return response.json()
 
 def weather_output():
-    weather_data()
-    weather = f'В населённом пункте {weather_data()['name']} сейчас {weather_data()['weather'][0]['description']}, {int(weather_data()['main']['temp'])} °C, ощущается как {int(weather_data()['main']['feels_like'])} °C.'
+    location_data = get_location_by_ip()
+    weather_info = weather_data(location_data)
+    weather = f'В населённом пункте {weather_info['name']} сейчас {weather_info['weather'][0]['description']}, {int(weather_info['main']['temp'])} °C, ощущается как {int(weather_info['main']['feels_like'])} °C.'
     print(weather)
     return weather
+
