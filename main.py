@@ -1,7 +1,7 @@
 # main.py
 from PyQt6 import QtWidgets, QtGui
 from PyQt6.QtCore import QSize, Qt, QObject, QThread, pyqtSignal
-import example as ex
+import recogtozion as ex
 
 class Worker(QObject):
     finished = pyqtSignal()
