@@ -42,5 +42,5 @@ def read_notes():
         lines = file.readlines()
         notes = ""
         for i, line in enumerate(lines):
-            notes += f"Заметка {line.strip()}\n"
+            notes += f"\tЗаметка {line.strip()}\n"
         return notes
